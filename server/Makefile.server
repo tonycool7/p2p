@@ -1,6 +1,6 @@
 CC		= g++
-CFLAGS		= -g -c -Wall 
-LDFLAGS		= 
+CFLAGS		= -g -c -Wall -std=c++11
+LDFLAGS		= -lpthread
 SOURCES		= server.cpp tcpstream.cpp tcpacceptor.cpp
 INCLUDES	= -I.
 OBJECTS		= $(SOURCES:.cpp=.o)
@@ -12,7 +12,7 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .cpp.o:
-	$(CC) $(CFLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $< $(LIBS) -o $@
 
 clean:
 	rm -rf $(OBJECTS) $(TARGET)

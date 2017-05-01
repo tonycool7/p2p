@@ -34,7 +34,6 @@ class TCPAcceptor
   public:
     TCPAcceptor(int port, const char* address="");
     ~TCPAcceptor();
-    void newConnection(TCPStream* stream);
 
     int start();
     TCPStream* accept();
