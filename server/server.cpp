@@ -20,20 +20,6 @@
 #include <stdlib.h>
 #include "tcpacceptor.h"
 
-
-void newConnection(TCPStream* stream ){
-   if (stream != NULL) {
-      ssize_t len;
-      char line[256];
-      while ((len = stream->receive(line, sizeof(line))) > 0) {
-          line[len] = 0;
-          printf("received - %s\n", line);
-          stream->send(line, len);
-      }
-      delete stream;
-  }
-}
-
 int main(int argc, char** argv)
 {
     if (argc < 2 || argc > 4) {
@@ -51,7 +37,7 @@ int main(int argc, char** argv)
     }
     if (acceptor->start() == 0) {
         while (1) {
-            newConnection(acceptor->accept());
+            acceptor->newConnection(acceptor->accept());
         }
     }
     exit(0);

@@ -84,3 +84,16 @@ TCPStream* TCPAcceptor::accept()
     }
     return new TCPStream(sd, &address);
 }
+
+void TCPAcceptor::newConnection(TCPStream* stream){
+  if (stream != NULL) {
+      ssize_t len;
+      char line[256];
+      while ((len = stream->receive(line, sizeof(line))) > 0) {
+          line[len] = 0;
+          printf("received - %s\n", line);
+          stream->send(line, len);
+      }
+      delete stream;
+  }
+}
