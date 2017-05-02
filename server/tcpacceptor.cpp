@@ -45,6 +45,7 @@ int TCPAcceptor::start()
     address.sin_port = htons(m_port);
     if (m_address.size() > 0) {
         inet_pton(PF_INET, m_address.c_str(), &(address.sin_addr));
+
     }
     else {
         address.sin_addr.s_addr = INADDR_ANY;
@@ -82,5 +83,6 @@ TCPStream* TCPAcceptor::accept()
         perror("accept() failed");
         return NULL;
     }
+
     return new TCPStream(sd, &address);
 }
