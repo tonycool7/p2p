@@ -28,7 +28,7 @@ using namespace std;
 class TCPStream
 {
     int     m_sd;
-    string  m_peerIP;
+    char*  m_peerIP;
     int     m_peerPort;
 
   public:
@@ -40,7 +40,7 @@ class TCPStream
     ssize_t send(const char* buffer, size_t len);
     ssize_t receive(char* buffer, size_t len, int timeout=0);
 
-    string getPeerIP();
+    char* getPeerIP();
     int    getPeerPort();
 
     enum {
