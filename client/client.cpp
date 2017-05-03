@@ -29,21 +29,19 @@
 
 using namespace std;
 
-pthread_t thread_id[5];
-int i =0;
 
-void areYouTheMainServer(TCPStream* stream, string message){
+void areYouTheMainServer(TCPStream* stream, string message, string ip){
   int len;
   char line[256];
   if (stream) {
-    while(1){
+    //while(1){
       stream->send(message.c_str(), message.size());
-      printf("sent - %s%s%u\n", message.c_str(), "thread id: ", pthread_self());
+      printf("sent - %s%s\n", message.c_str(), ip.c_str());
       len = stream->receive(line, sizeof(line));
       line[len] = 0;
       printf("received - %s\n", line);
-      sleep(5);
-    }
+      //sleep(5);
+    //}
   }
   delete stream;
 }
@@ -51,8 +49,7 @@ void areYouTheMainServer(TCPStream* stream, string message){
 void connectToServer(string ip){
   TCPConnector* connector = new TCPConnector();
   TCPStream* stream = connector->connect(ip.c_str(), 81);
-  areYouTheMainServer(stream, "Are you the main server");
-  i++;
+  areYouTheMainServer(stream, "Are you the main server", ip);
 }
 
 int main(int argc, char** argv)
@@ -62,8 +59,7 @@ int main(int argc, char** argv)
   string line;
   if(file.is_open()){
     while(getline(file, line)){
-      thread newThread(connectToServer, line);
-      newThread.join();
+      connectToServer(line);
     }
   }else{
     cout<<"file could not open";

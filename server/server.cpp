@@ -19,24 +19,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tcpacceptor.h"
-#include <pthread.h>
+#include <thread>
 
-pthread_t thread_id[5];
-int i =0;
-
-void *newConnection(void* stream){
-  TCPStream* new_stream;
-  new_stream = (TCPStream*)stream;
-  i++;
-  if (new_stream != NULL) {
+void newConnection(TCPStream* stream){
+  if (stream != NULL) {
       ssize_t len;
       char line[256];
-      while ((len = new_stream->receive(line, sizeof(line))) > 0) {
+      while ((len = stream->receive(line, sizeof(line))) > 0) {
           line[len] = 0;
           printf("received - %s%s%u\n", line, "from Client ip: ", pthread_self());
-          new_stream->send(line, len);
+          stream->send(line, len);
       }
-      delete new_stream;
+      delete stream;
   }
 }
 
@@ -50,8 +44,8 @@ int main(int argc, char** argv)
 
   if (acceptor->start() == 0) {
       while (1) {
-          pthread_create(&thread_id[i],0,&newConnection, (void*)acceptor->accept());
-          pthread_detach(thread_id[i]);
+          thread t(newConnection, acceptor->accept());
+          t.detach();
       }
   }
   exit(0);
