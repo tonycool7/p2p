@@ -22,7 +22,7 @@
    #include <pthread.h>
 
 pthread_t thread_id[5];
-    int i =0;
+int i =0;
 
 void *newConnection(void* stream){
   TCPStream* new_stream;
