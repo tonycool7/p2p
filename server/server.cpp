@@ -20,6 +20,19 @@
 #include <stdlib.h>
 #include "tcpacceptor.h"
 #include <thread>
+   #include <string.h>
+#include <fstream>
+
+string answer(){
+  fstream file;
+  file.open("answer.ans");
+  string line;
+  if(file.is_open()){
+    getline(file, line);
+  }
+
+  return line;
+}
 
 void newConnection(TCPStream* stream){
   if (stream != NULL) {
@@ -28,7 +41,7 @@ void newConnection(TCPStream* stream){
       while ((len = stream->receive(line, sizeof(line))) > 0) {
           line[len] = 0;
           printf("received - %s%s%u\n", line, "from Client ip: ", pthread_self());
-          stream->send(line, len);
+          stream->send(answer().c_str(), strlen(answer().c_str()));
       }
       delete stream;
   }
