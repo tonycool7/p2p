@@ -42,10 +42,10 @@ void areYouTheMainServer(TCPStream* stream, string message){
       len = stream->receive(line, sizeof(line));
       line[len] = 0;
       printf("received - %s\n", line);
-      // delete stream;
       sleep(5);
     }
   }
+  delete stream;
 }
 
 void connectToServer(string ip){

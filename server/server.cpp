@@ -42,25 +42,17 @@ void *newConnection(void* stream){
 
 int main(int argc, char** argv)
 {
-    if (argc < 2 || argc > 4) {
-        printf("usage: server <port> [<ip>]\n");
-        exit(1);
-    }
 
-    TCPStream* stream = NULL;
-    TCPAcceptor* acceptor = NULL;
-    if (argc == 3) {
-        acceptor = new TCPAcceptor(atoi(argv[1]), argv[2]);
-    }
-    else {
-        acceptor = new TCPAcceptor(atoi(argv[1]));
-    }
+  TCPStream* stream = NULL;
+  TCPAcceptor* acceptor = NULL;
 
-    if (acceptor->start() == 0) {
-        while (1) {
-            pthread_create(&thread_id[i],0,&newConnection, (void*)acceptor->accept());
-            pthread_detach(thread_id[i]);
-        }
-    }
-    exit(0);
+  acceptor = new TCPAcceptor(81);
+
+  if (acceptor->start() == 0) {
+      while (1) {
+          pthread_create(&thread_id[i],0,&newConnection, (void*)acceptor->accept());
+          pthread_detach(thread_id[i]);
+      }
+  }
+  exit(0);
 }
