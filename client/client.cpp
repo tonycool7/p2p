@@ -34,14 +34,11 @@ void areYouTheMainServer(TCPStream* stream, string message, string ip){
   int len;
   char line[256];
   if (stream) {
-    //while(1){
       stream->send(message.c_str(), message.size());
       printf("sent - %s%s\n", message.c_str(), ip.c_str());
       len = stream->receive(line, sizeof(line));
       line[len] = 0;
       printf("received - %s\n", line);
-      //sleep(5);
-    //}
   }
   delete stream;
 }
