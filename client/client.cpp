@@ -21,9 +21,16 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <thread>
 #include "tcpconnector.h"
+#include <fstream>
+#include <iostream>
+
 
 using namespace std;
+
+pthread_t thread_id[5];
+int i =0;
 
 void areYouTheMainServer(TCPStream* stream, string message){
   int len;
@@ -31,14 +38,21 @@ void areYouTheMainServer(TCPStream* stream, string message){
   if (stream) {
     while(1){
       stream->send(message.c_str(), message.size());
-      printf("sent - %s\n", message.c_str());
+      printf("sent - %s%s%u\n", message.c_str(), "thread id: ", pthread_self());
       len = stream->receive(line, sizeof(line));
       line[len] = 0;
       printf("received - %s\n", line);
       // delete stream;
-      sleep(10);
+      sleep(5);
     }
   }
+}
+
+void connectToServer(string ip){
+  TCPConnector* connector = new TCPConnector();
+  TCPStream* stream = connector->connect(ip.c_str(), 81);
+  areYouTheMainServer(stream, "Are you the main server");
+  i++;
 }
 
 int main(int argc, char** argv)
@@ -57,11 +71,21 @@ int main(int argc, char** argv)
    }
     
 
-    file.close();
-    TCPConnector* connector = new TCPConnector();
-    TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
+  file.close();
+  TCPConnector* connector = new TCPConnector();
+  TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
 
-    areYouTheMainServer(stream, "Are you the main server");
+  fstream file;
+  file.open("server.lst");
+  string line;
+  if(file.is_open()){
+    while(getline(file, line)){
+      thread newThread(connectToServer, line);
+      newThread.join();
+    }
+  }else{
+    cout<<"file could not open";
+  }
 
-    exit(0);
+  exit(0);
 }
