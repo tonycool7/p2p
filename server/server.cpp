@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tcpacceptor.h"
-   #include <pthread.h>
+#include <pthread.h>
 
 pthread_t thread_id[5];
     int i =0;

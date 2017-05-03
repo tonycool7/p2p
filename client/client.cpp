@@ -17,8 +17,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <unistd.h>
+#include <fstream>
+#include <sstream>
+#include <iostream>
 #include "tcpconnector.h"
 
 using namespace std;
@@ -45,6 +47,17 @@ int main(int argc, char** argv)
         printf("usage: %s <port> <ip>\n", argv[0]);
         exit(1);
     }
+    ifstream file("server.txt"); // pass file name as argment
+    string linebuffer;
+    while (file && getline(file, linebuffer)){
+      if (linebuffer.length() == 0)continue;
+
+      printf("%s\n", linebuffer);
+
+   }
+    
+
+    file.close();
     TCPConnector* connector = new TCPConnector();
     TCPStream* stream = connector->connect(argv[2], atoi(argv[1]));
 
