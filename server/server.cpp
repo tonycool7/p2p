@@ -20,18 +20,39 @@
 #include <stdlib.h>
 #include "tcpacceptor.h"
 #include <thread>
-   #include <string.h>
+#include <string.h>
 #include <fstream>
+#include "serverContainer.h"
+#include <iostream>
 
-string answer(){
+using namespace std;
+
+ServerContainer *container = new ServerContainer();
+
+string sendingIndexNumber(string ip){
+  if(!container->serverRegistered(ip)){
+    container->insert(ip);
+    return to_string(ServerContainer::size+1);
+  }else{
+    cout<<container->index(ip)<<endl;
+    return to_string(container->index(ip));
+  }
+}
+
+string AmITheMainServer(){
   fstream file;
   file.open("answer.ans");
   string line;
   if(file.is_open()){
     getline(file, line);
   }
-
   return line;
+}
+
+string requestManager(string req_code, string ip){
+  if(req_code == "101") return AmITheMainServer();
+  else if(req_code == "102") return sendingIndexNumber(ip);
+  else return "incorrect request";
 }
 
 void newConnection(TCPStream* stream){
@@ -40,16 +61,41 @@ void newConnection(TCPStream* stream){
       char line[256];
       while ((len = stream->receive(line, sizeof(line))) > 0) {
           line[len] = 0;
-          printf("received - %s%s%u\n", line, "from Client ip: ", pthread_self());
-          stream->send(answer().c_str(), strlen(answer().c_str()));
+          printf("received request - %s%s%u\n", line, "from Client ip: ", pthread_self());
+          string answer = requestManager(line, "192.168.88.243");
+          stream->send(answer.c_str(), strlen(answer.c_str()));
       }
       delete stream;
   }
 }
 
+bool indexServer(int i){
+  fstream file;
+  file.open("index.in", fstream::out);
+  if(file.is_open()){
+    file << i;
+    file.close();
+    return true;
+  }
+  return false;
+}
+
 int main(int argc, char** argv)
 {
+  if(argc > 1){
+    string init = "init";
+    if(argv[1] == init){
+      printf("%s\n", "initializing main server.....");
+      if(indexServer(1)){
+        printf("%s\n", "Main server successfully initialized");
+      }
+    }else{
+      printf("%s\n", "wrong input");
+      exit(0);
+    }
+  }
 
+  
   TCPStream* stream = NULL;
   TCPAcceptor* acceptor = NULL;
 

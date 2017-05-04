@@ -15,4 +15,4 @@ $(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INCLUDES) $< $(LIBS) -o $@
 
 clean:
-	rm -rf $(OBJECTS) $(TARGET)
+	rm -rf *.o

@@ -26,27 +26,42 @@
 #include <fstream>
 #include <iostream>
 
-
 using namespace std;
 
-
-void areYouTheMainServer(TCPStream* stream, string message, string ip){
+string sendRequestToServer(TCPStream* stream, string message, string ip){
   int len;
   char line[256];
   if (stream) {
       stream->send(message.c_str(), message.size());
-      printf("sent - %s%s\n", message.c_str(), ip.c_str());
+      printf("sent - %s %s\n", message.c_str(), ip.c_str());
       len = stream->receive(line, sizeof(line));
       line[len] = 0;
-      printf("received - %s\n", line);
   }
-  delete stream;
+  printf("%s\n", line);
+  return line;
+}
+
+
+bool setClientIndex(string i){
+  fstream file;
+  file.open("index.in", fstream::out);
+  if(file.is_open()){
+    file << i;
+    file.close();
+    return true;
+  }
+  return false;
 }
 
 void connectToServer(string ip){
   TCPConnector* connector = new TCPConnector();
   TCPStream* stream = connector->connect(ip.c_str(), 81);
-  areYouTheMainServer(stream, "Are you the main server", ip);
+  if(sendRequestToServer(stream, "101", ip) == "yes"){
+    string index = sendRequestToServer(stream, "102", ip);
+    setClientIndex(index);
+  }
+
+  delete stream;
 }
 
 int main(int argc, char** argv)
