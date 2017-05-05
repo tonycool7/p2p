@@ -61,8 +61,8 @@ void newConnection(TCPStream* stream){
       char line[256];
       while ((len = stream->receive(line, sizeof(line))) > 0) {
           line[len] = 0;
-          printf("received request - %s%s%u\n", line, "from Client ip: ", pthread_self());
-          string answer = requestManager(line, "192.168.88.243");
+          printf("received request - %s%s%u\n", line, " from Client ip: ", stream->getPeerIP());
+          string answer = requestManager(line, stream->getPeerIP());
           stream->send(answer.c_str(), strlen(answer.c_str()));
       }
       delete stream;

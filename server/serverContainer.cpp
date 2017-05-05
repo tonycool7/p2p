@@ -1,6 +1,6 @@
 #include "serverContainer.h"
 
-int ServerContainer::size = 0;
+int ServerContainer::size = 1;
 
 ServerContainer::ServerContainer()
 {
