@@ -23,18 +23,14 @@
 #include <string.h>
 #include <fstream>
 #include "serverContainer.h"
-#include <iostream>
-
-using namespace std;
 
 ServerContainer *container = new ServerContainer();
 
 string sendingIndexNumber(string ip){
   if(!container->serverRegistered(ip)){
     container->insert(ip);
-    return to_string(ServerContainer::size+1);
+    return to_string(ServerContainer::size);
   }else{
-    cout<<container->index(ip)<<endl;
     return to_string(container->index(ip));
   }
 }
@@ -49,6 +45,16 @@ string AmITheMainServer(){
   return line;
 }
 
+bool setMainServer(){
+  fstream file;
+  file.open("answer.ans");
+  if(file.is_open()){
+    file << "yes";
+    return true;
+  }
+  return false;
+}
+
 string requestManager(string req_code, string ip){
   if(req_code == "101") return AmITheMainServer();
   else if(req_code == "102") return sendingIndexNumber(ip);
@@ -61,12 +67,14 @@ void newConnection(TCPStream* stream){
       char line[256];
       while ((len = stream->receive(line, sizeof(line))) > 0) {
           line[len] = 0;
-          printf("received request - %s%s%u\n", line, " from Client ip: ", stream->getPeerIP());
+          printf("received request - %s%s%s\n", line, " from Client ip: ", stream->getPeerIP());
           string answer = requestManager(line, stream->getPeerIP());
           stream->send(answer.c_str(), strlen(answer.c_str()));
+          printf("sent reply - %s\n", answer.c_str());
       }
-      delete stream;
   }
+  //container->display();
+  delete stream;
 }
 
 bool indexServer(int i){
@@ -88,6 +96,11 @@ int main(int argc, char** argv)
       printf("%s\n", "initializing main server.....");
       if(indexServer(1)){
         printf("%s\n", "Main server successfully initialized");
+        if(setMainServer()){
+          printf("%s\n", "Listening for connections...");
+        }else{
+          printf("%s\n", "file answer.ans could not open");
+        }
       }
     }else{
       printf("%s\n", "wrong input");
@@ -103,8 +116,9 @@ int main(int argc, char** argv)
 
   if (acceptor->start() == 0) {
       while (1) {
-          thread t(newConnection, acceptor->accept());
-          t.detach();
+          // thread t(newConnection, acceptor->accept());
+          // t.detach();
+        newConnection(acceptor->accept());
       }
   }
   exit(0);

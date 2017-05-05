@@ -8,11 +8,10 @@ ServerContainer::ServerContainer()
 }
 
 void ServerContainer::insert(string ip){
-    size++; //cdfaszfa
+    size++;
 	node *temp = createNewNode(ip, size);
     if(root == NULL){
         root = temp;
-        size = 0;
     }else{
         node *cur = root;
         while(cur->next != NULL){
@@ -39,8 +38,8 @@ void ServerContainer::display(){
 	node *temp;
     temp = top();
     while(temp != NULL){
-        printf("%s\n", temp->ip_Addr);
-        printf("%d\n", temp->index);
+        printf("ip of server :%s\n", temp->ip_Addr.c_str());
+        printf("index: %d\n", temp->index);
         temp = temp->next;
     }
 }
@@ -61,14 +60,10 @@ bool ServerContainer::serverRegistered(string ip){
 int ServerContainer::index(string ip){
 	node *temp;
     temp = top();
-    int i;
-
     while(temp != NULL){
         if(temp->ip_Addr == ip){
-            i = temp->index;
+            return temp->index;
         }
         temp = temp->next;
-        break;
     }
-    return i;
 }
