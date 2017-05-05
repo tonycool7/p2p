@@ -44,7 +44,6 @@ ssize_t TCPStream::receive(char* buffer, size_t len, int timeout)
         return read(m_sd, buffer, len);
     }
     return connectionTimedOut;
-
 }
 
 char* TCPStream::getPeerIP() 

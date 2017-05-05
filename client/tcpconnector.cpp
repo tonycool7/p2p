@@ -41,9 +41,7 @@ TCPStream* TCPConnector::connect(const char* server, int port)
         return NULL;
     }
     if (::connect(sd, (struct sockaddr*)&address, sizeof(address)) != 0) {
-        // perror("connect() failed");
-        printf("%s%s%s\n", "Server with ip : ", server, " is offline");
-        perror("unable to connect");
+        printf("Server with ip :  %s%s\n", server, " is offline");
         close(sd);
         return NULL;
     }
