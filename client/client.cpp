@@ -27,6 +27,7 @@
 #include <iostream>
 
 using namespace std;
+bool mainServerActive = false;
 
 string sendRequestToServer(TCPStream* stream, string message, string ip){
   int len;
@@ -57,6 +58,7 @@ void connectToServer(string ip){
   TCPConnector* connector = new TCPConnector();
   TCPStream* stream = connector->connect(ip.c_str(), 81);
   if(sendRequestToServer(stream, "101", ip) == "yes"){
+    mainServerActive = true;
     string index = sendRequestToServer(stream, "102", ip);
     setClientIndex(index);
   }
