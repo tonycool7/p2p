@@ -71,9 +71,14 @@ bool setMainServer(){
   return false;
 }
 
+string synchronizeAllServers(){
+  return "ok";
+}
+
 string requestManager(string req_code, string ip){
   if(req_code == "101") return AmITheMainServer();
   else if(req_code == "102") return sendingIndexNumber(ip);
+  else if(req_code == "103") return synchronizeAllServers();
   else return "incorrect request";
 }
 
