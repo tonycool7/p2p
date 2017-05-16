@@ -72,14 +72,14 @@ bool setMainServer(){
 }
 
 string synchronizeAllServers(){
-  node *temp;
-    temp = container->top();
-    while(temp != NULL){
-        printf("ip of server :%s\n", temp->ip_Addr.c_str());
-        exec("rsync -a /backup tony@192.168.1.224:/diplom/p2p/backup");
-        temp = temp->next;
-    }
-
+  // node *temp;
+  //   temp = container->top();
+  //   while(temp != NULL){
+  //       printf("ip of server :%s\n", temp->ip_Addr.c_str());
+        
+  //       temp = temp->next;
+  //   }
+    cout<< exec("rsync -a -O ../backup/ tony@192.168.1.224:~/diplom/p2p/backup");
     return "ok";
 }
 
@@ -135,6 +135,8 @@ int main(int argc, char** argv)
       printf("%s\n", "wrong input");
       exit(0);
     }
+  }else{
+    printf("%s\n", "Listening for connections...");
   }
 
   
