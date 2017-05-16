@@ -72,7 +72,15 @@ bool setMainServer(){
 }
 
 string synchronizeAllServers(){
-  return "ok";
+  node *temp;
+    temp = container->top();
+    while(temp != NULL){
+        printf("ip of server :%s\n", temp->ip_Addr.c_str());
+        exec("rsync -a /backup tony@192.168.1.224:/diplom/p2p/backup");
+        temp = temp->next;
+    }
+
+    return "ok";
 }
 
 string requestManager(string req_code, string ip){
