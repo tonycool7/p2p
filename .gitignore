@@ -1,0 +1,11 @@
+client.o
+tcpstream.o
+tcpconnector.o
+server.o 
+serverContainer.o 
+tcpstream.o 
+tcpacceptor.o
+index.in
+answer.ans
+backup
+request.o
