@@ -1,7 +1,7 @@
 CC		= g++
 CFLAGS		= -g -c -Wall -std=c++11
 LDFLAGS		= -lpthread
-SOURCES		= client.cpp tcpstream.cpp tcpconnector.cpp
+SOURCES		= client.cpp tcpstream.cpp tcpconnector.cpp request.cpp
 INCLUDES	= -I.
 OBJECTS		= $(SOURCES:.cpp=.o)
 TARGET		= client

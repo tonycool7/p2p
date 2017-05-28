@@ -16,116 +16,20 @@
    https://github.com/vichargrave/tcpsockets
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "tcpacceptor.h"
 #include <thread>
-#include <cstdio>
-#include <memory>
 #include <stdexcept>
-#include <array>
-#include <string.h>
-#include <fstream>
-#include "serverContainer.h"
-
-ServerContainer *container = new ServerContainer();
-
-string exec(const char* cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) throw std::runtime_error("popen() failed!");
-    while (!feof(pipe.get())) {
-        if (fgets(buffer.data(), 128, pipe.get()) != NULL)
-            result += buffer.data();
-    }
-    return result;
-}
-
-string sendingIndexNumber(string ip){
-  if(!container->serverRegistered(ip)){
-    container->insert(ip);
-    return to_string(ServerContainer::size);
-  }else{
-    return to_string(container->index(ip));
-  }
-}
-
-string AmITheMainServer(){
-  fstream file;
-  file.open("answer.ans");
-  string line;
-  if(file.is_open()){
-    getline(file, line);
-  }
-  return line;
-}
-
-bool setMainServer(){
-  fstream file;
-  file.open("answer.ans");
-  if(file.is_open()){
-    file << "yes";
-    return true;
-  }
-  return false;
-}
-
-string synchronizeAllServers(){
-  // node *temp;
-  //   temp = container->top();
-  //   while(temp != NULL){
-  //       printf("ip of server :%s\n", temp->ip_Addr.c_str());
-        
-  //       temp = temp->next;
-  //   }
-    cout<< exec("rsync -a -O ../backup/ tony@192.168.1.224:~/diplom/p2p/backup");
-    return "ok";
-}
-
-string requestManager(string req_code, string ip){
-  if(req_code == "101") return AmITheMainServer();
-  else if(req_code == "102") return sendingIndexNumber(ip);
-  else if(req_code == "103") return synchronizeAllServers();
-  else return "incorrect request";
-}
-
-void newConnection(TCPStream* stream){
-  if (stream != NULL) {
-      ssize_t len;
-      char line[256];
-      while ((len = stream->receive(line, sizeof(line))) > 0) {
-          line[len] = 0;
-          printf("received request - %s%s%s\n", line, " from Client ip: ", stream->getPeerIP());
-          string answer = requestManager(line, stream->getPeerIP());
-          stream->send(answer.c_str(), strlen(answer.c_str()));
-          printf("sent reply - %s\n", answer.c_str());
-      }
-  }
-  //container->display();
-  delete stream;
-}
-
-bool indexServer(int i){
-  fstream file;
-  file.open("index.in", fstream::out);
-  if(file.is_open()){
-    file << i;
-    file.close();
-    return true;
-  }
-  return false;
-}
+#include "request.h"
 
 int main(int argc, char** argv)
 {
+  request r;
   if(argc > 1){
     string init = "init";
     if(argv[1] == init){
       printf("%s\n", "initializing main server.....");
-      if(indexServer(1)){
+      if(r.indexServer(1)){
         printf("%s\n", "Main server successfully initialized");
-        if(setMainServer()){
+        if(r.setMainServer()){
           printf("%s\n", "Listening for connections...");
         }else{
           printf("%s\n", "file answer.ans could not open");
@@ -149,7 +53,7 @@ int main(int argc, char** argv)
       while (1) {
           // thread t(newConnection, acceptor->accept());
           // t.detach();
-        newConnection(acceptor->accept());
+        r.newConnection(acceptor->accept());
       }
   }
   exit(0);

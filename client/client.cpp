@@ -15,75 +15,20 @@
    https://github.com/vichargrave/tcpsockets
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fstream>
-#include <sstream>
-#include <iostream>
+#include "request.h"
 #include <thread>
-#include "tcpconnector.h"
-#include <fstream>
-#include <iostream>
 
 using namespace std;
-bool mainServerActive = false;
-
-string sendRequestToServer(TCPStream* stream, string message, string ip){
-  int len;
-  char line[256];
-  if (stream) {
-      stream->send(message.c_str(), message.size());
-      printf("sent - %s %s\n", message.c_str(), ip.c_str());
-      len = stream->receive(line, sizeof(line));
-      line[len] = 0;
-  }
-  printf("%s\n", line);
-  return line;
-}
-
-
-bool setClientIndex(string i){
-  fstream file;
-  file.open("index.in", fstream::out);
-  if(file.is_open()){
-    file << i;
-    file.close();
-    return true;
-  }
-  return false;
-}
-
-void connectToServer(string ip){
-  TCPConnector* connector = new TCPConnector();
-  TCPStream* stream = connector->connect(ip.c_str(), 81);
-  if(sendRequestToServer(stream, "101", ip) == "yes"){
-    mainServerActive = true;
-    string index = sendRequestToServer(stream, "102", ip);
-    setClientIndex(index);
-  }
-  delete stream;
-}
-
-void chooseMainServer(string ip){
-  TCPConnector* connector = new TCPConnector();
-  TCPStream* stream = connector->connect(ip.c_str(), 81);
-  if(sendRequestToServer(stream, "101", ip) == "yes"){
-    mainServerActive = true;
-    string index = sendRequestToServer(stream, "102", ip);
-    setClientIndex(index);
-  }
-  delete stream;
-}
 
 int main(int argc, char** argv)
 {
+  request r;
   fstream file;
   file.open("server.lst");
   string line;
   if(file.is_open()){
     while(getline(file, line)){
-      connectToServer(line);
+      r.connectToServer(line);
     }
   }else{
     cout<<"file could not open";
